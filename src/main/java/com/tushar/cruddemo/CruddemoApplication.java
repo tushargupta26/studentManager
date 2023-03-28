@@ -1,6 +1,6 @@
 package com.tushar.cruddemo;
 
-import com.tushar.cruddemo.dao.StudentDAO;
+import com.tushar.cruddemo.dao.StudentRepository;
 import com.tushar.cruddemo.entity.Student;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootApplication
 public class CruddemoApplication {
@@ -17,67 +18,76 @@ public class CruddemoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner(StudentDAO studentDAO){
+	public CommandLineRunner commandLineRunner(StudentRepository studentRepository){
 		return runner -> {
-//			createStudent(studentDAO);
+//			createStudent(studentRepository);
 			
-//			readStudent(studentDAO);
+//			readStudent(studentRepository);
 
-//			queryForStudents(studentDAO);
+//			queryForStudents(studentRepository);
 
-//			queryForStudentByLastName(studentDAO);
+//			queryForStudentByLastName(studentRepository);
 
-//			updateStudent(studentDAO);
+//			updateStudent(studentRepository);
 
-//			deleteStudent(studentDAO);
+//			deleteStudent(studentRepository);
 
-//			deleteAllStudents(studentDAO);
+//			deleteAllStudents(studentRepository);
 		};
 	}
 
-	private void deleteAllStudents(StudentDAO studentDAO) {
-		System.out.println("Total rows deleted are" + studentDAO.deleteAll());
+	private void deleteAllStudents(StudentRepository studentRepository) {
+		System.out.println("All rows deleted");
+		studentRepository.deleteAll();
 	}
 
-	private void deleteStudent(StudentDAO studentDAO) {
-		int studentId = 1;
-//		Student myStudent = studentDAO.findById(studentId);
+	private void deleteStudent(StudentRepository studentRepository) {
+		int studentId = 2;
+//		Student myStudent = studentRepository.findById(studentId);
 
 		// change last name to "Scooby"
 		System.out.println("Deleting student");
-
+		Optional<Student> student = studentRepository.findById(studentId);
+		if(!student.isEmpty()){
+			studentRepository.delete(student.get());
+		}
+		else {
+			System.out.println("No Such student");
+		}
 		// delete the student
-		studentDAO.delete(studentId);
+
 	}
 
-	private void updateStudent(StudentDAO studentDAO) {
+	private void updateStudent(StudentRepository studentRepository) {
 		// retrieve student based on the id: primary key
 		int studentId = 1;
-		Student myStudent = studentDAO.findById(studentId);
-
+		Optional<Student> myStudentOptional = studentRepository.findById(studentId);
+		if(myStudentOptional.isEmpty())
+			return;
+		Student myStudent = myStudentOptional.get();
 		// change last name to "Scooby"
 		System.out.println("Updatting student");
 		myStudent.setLastName("Scooby");
 
 		// update the student
-		studentDAO.update(myStudent);
+		studentRepository.save(myStudent);
 
 		// display the student
 		System.out.println(myStudent);
 	}
 
-	private void queryForStudentByLastName(StudentDAO studentDAO) {
-		List<Student> theStudents = studentDAO.findByLastName("last1");
+//	private void queryForStudentByLastName(StudentRepository studentRepository) {
+//		List<Student> theStudents = studentRepository.f("last1");
+//
+//		// display the list
+//		for (Student tempStudent: theStudents){
+//			System.out.println(tempStudent);
+//		}
+//	}
 
-		// display the list
-		for (Student tempStudent: theStudents){
-			System.out.println(tempStudent);
-		}
-	}
-
-	private void queryForStudents(StudentDAO studentDAO) {
+	private void queryForStudents(StudentRepository studentRepository) {
 		// get a list of students
-		List<Student> theStudents = studentDAO.findAll();
+		List<Student> theStudents = studentRepository.findAll();
 
 		// display the list
 		for (Student tempStudent: theStudents){
@@ -85,7 +95,7 @@ public class CruddemoApplication {
 		}
 	}
 
-	private void readStudent(StudentDAO studentDAO) {
+	private void readStudent(StudentRepository studentRepository) {
 
 		// create the student object
 		System.out.println("Creating new student object");
@@ -93,24 +103,26 @@ public class CruddemoApplication {
 		// save the student object
 
 		System.out.println("Saving the student");
-		studentDAO.save(tempStudent);
+		studentRepository.save(tempStudent);
 
 		// display id of the saved student
 		System.out.println("Saved student. Generated Id: " + tempStudent.getId());
 		int id = tempStudent.getId();
 		// display student
-		Student savedStudent = studentDAO.findById(id);
-		System.out.println("Found the student: " + savedStudent);
+		Optional<Student> savedStudent = studentRepository.findById(id);
+		if(savedStudent.isEmpty())
+			return;
+		System.out.println("Found the student: " + savedStudent.get());
 	}
 
-	private void createStudent(StudentDAO studentDAO) {
+	private void createStudent(StudentRepository studentRepository) {
 		// create the student object
 		System.out.println("Creating new student object");
-		Student tempStudent = new Student("second", "last", "secondAndLast@email.com");
+		Student tempStudent = new Student("Tushar", "Gupta", "TusharGupta@email.com");
 		// save the student object
 
 		System.out.println("Saving the student");
-		studentDAO.save(tempStudent);
+		studentRepository.save(tempStudent);
 
 		// display id of the saved student
 		System.out.println("Saved student. Generated Id: " + tempStudent.getId());
